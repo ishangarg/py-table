@@ -5,12 +5,21 @@ class Node:
     color = ''
     left, right, parent = None, None, None
 
-    def __init__(self, data):
-        self.data = data
+    def __init__(self, key, value):
+        self.data = self.normalize_keys(key)
+        self.value = value
         self.color = 'Red'
         self.left = None
         self.right = None
         self.parent = None
+    
+    def normalize_keys(self, key):
+        if isinstance(key, int):
+            return (0, key)
+        if isinstance(key, str):
+            return (1, key)
+        else:
+            raise TypeError('Unsupported Key Type')
 
 class RBTree:
     root = None #5
@@ -94,11 +103,11 @@ class RBTree:
     def inorder_helper(self, node):
         if node != None:
             self.inorder_helper(node.left)
-            print(node.data)
+            print(node.data, '-', node.value)
             self.inorder_helper(node.right)
 
-    def insert(self, data):
-        node = Node(data=data)
+    def insert(self, key, data):
+        node = Node(key=key, value=data)
 
         if self.root == None:
             node.color = 'Black'
@@ -138,11 +147,11 @@ if __name__ == '__main__':
 
     rbtree = RBTree()
 
-    rbtree.insert(4)
-    rbtree.insert(5)
-    # rbtree.inorder_traversal()
-    rbtree.insert(6)
-    rbtree.insert(15)
-    rbtree.insert(-1)
+    rbtree.insert(4, 'hello')
+    rbtree.insert('name', 'ishan')
+    # # rbtree.inorder_traversal()
+    # rbtree.insert(6)
+    # rbtree.insert(15)
+    # rbtree.insert(-1)
 
     rbtree.inorder_traversal()
