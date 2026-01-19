@@ -2,12 +2,14 @@ import sys
 
 class Node:
     data = 0
+    value = None
     color = ''
     left, right, parent = None, None, None
 
     def __init__(self, key, value):
         self.data = self.normalize_keys(key)
         self.value = value
+        self.size = self.compute_size()
         self.color = 'Red'
         self.left = None
         self.right = None
@@ -20,6 +22,32 @@ class Node:
             return (1, key)
         else:
             raise TypeError('Unsupported Key Type')
+        
+    def get_deep_sizeof(self, obj, seen=None):
+        if seen == None:
+            seen = set()
+        
+        obj_id = id(obj)
+        if obj_id in seen:
+            return 0
+        seen.add(obj_id)
+
+        size = sys.getsizeof(obj)
+
+        if isinstance(obj, dict):
+            size += sum( (self.get_deep_sizeof(k, seen) + self.get_deep_sizeof(v, seen) for k, v in obj.items()))
+        elif isinstance(obj, (list, tuple, set)):
+            size += sum(self.get_deep_sizeof(i, seen) for i in obj)
+        
+        return size
+
+    
+    def compute_size(self):
+        key_size = self.get_deep_sizeof(self.data)
+        value_size = self.get_deep_sizeof(self.value)
+
+        return key_size + value_size
+
 
 class RBTree:
     root = None #5
@@ -108,6 +136,7 @@ class RBTree:
 
     def insert(self, key, data):
         node = Node(key=key, value=data)
+        self.size += node.size
 
         if self.root == None:
             node.color = 'Black'
@@ -155,3 +184,4 @@ if __name__ == '__main__':
     # rbtree.insert(-1)
 
     rbtree.inorder_traversal()
+    print(rbtree.size)
